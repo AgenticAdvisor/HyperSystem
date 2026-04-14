@@ -1,0 +1,40 @@
+# Office binaries (large, not diffable)
+*.docx
+*.pptx
+*.xlsx
+*.pdf
+
+# Images
+*.png
+*.jpg
+*.jpeg
+*.svg
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment files (contain secrets)
+.env
+.env.*
+.env.local
+.env.production
+
+# Local settings (not shared)
+.claude/settings.local.json
+
+# Python
+__pycache__/
+*.pyc
+
+# Node
+node_modules/
+
+# Security audit log (generated at runtime, contains threat detections)
+tools/.security-log.jsonl
+
+# Session temp files
+/tmp/.claude-*
+
+# Worktrees
+.worktrees/
