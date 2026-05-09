@@ -5,63 +5,37 @@ user-invocable: true
 allowed-tools: Read, Edit, Write, Bash, TodoWrite
 ---
 
-# New Project Setup
+# New Project Bootstrap
 
 ## Step 1: Gather Info
-
 Ask the user conversationally:
-- **Project name** — What should this project be called?
-- **Description** — One or two sentences about what the project is.
-
-Do not proceed until you have both.
+- "What's the project name?"
+- "Tell me about it — what is it, how far along, anything I should know?"
 
 ## Step 2: Create Project Files
+From the user's answers, create:
 
-Create the following 5 files. Use `{Name}` for the display name and `{slug}` for the kebab-case version (e.g., "My Project" becomes `my-project`).
-
-1. **`Projects/{Name}/PROJECT-CONTEXT.md`** — Use the template from `docs/TEMPLATES.md`. Fill in the project name, description, and today's date. Set status to "Active".
-
-2. **`Projects/{Name}/CHANGELOG.md`** — Initialize with:
-   ```markdown
-   # {Name} — Changelog
-
-   ## YYYY-MM-DD — Project Created
-   - Initial scaffolding via /new-project
+1. `Projects/{Name}/PROJECT-CONTEXT.md` — Use the Project Context Template from TEMPLATES.md
+2. `Projects/{Name}/CHANGELOG.md` — Header: `# {Name} Changelog`
+3. `memory/projects/{slug}.md` — Use the Deep Memory Template from TEMPLATES.md
+4. `tasks/lessons/{slug}.md` — Header + empty rules section:
    ```
-
-3. **`memory/projects/{slug}.md`** — Initialize with:
-   ```markdown
-   # {Name}
-
-   {Description}
-
-   ## Key Decisions
-   - (none yet)
-
-   ## Architecture Notes
-   - (none yet)
-   ```
-
-4. **`tasks/lessons/{slug}.md`** — Initialize with:
-   ```markdown
    # Lessons — {Name}
+   > Domain-specific lessons for {name} sessions.
 
    ## Rules
-   (No rules yet. Rules are added when corrections are made during sessions.)
+   (none yet)
    ```
-
-5. **`.claude/skills/{slug}-context/SKILL.md`** — Context-loading skill:
+5. `.claude/skills/{slug}-context/SKILL.md`:
    ```yaml
    ---
    name: {slug}-context
-   description: Load {Name} context. Use when working on {description snippet}.
-   user-invocable: true
+   description: Load {project name} context. Use when working on {trigger phrases}.
+   user-invocable: false
    allowed-tools: Read
    ---
-   ```
-   Body:
-   ```markdown
-   Load context for {Name}:
+
+   Load context for {project name}:
    1. Read `Projects/{Name}/PROJECT-CONTEXT.md`
    2. Read `tasks/lessons/{slug}.md` — this is your working document for this session.
       Scan for gaps: if you learn something new or get corrected, add it here immediately.
@@ -74,12 +48,10 @@ Create the following 5 files. Use `{Name}` for the display name and `{slug}` for
    ```
 
 ## Step 3: Update Governance Files
-
-1. **`executive-summary/EXECUTIVE_SUMMARY.md`** — Add a row for the new project with status "Active".
-2. **`memory/INDEX.md`** — Add a line pointing to `memory/projects/{slug}.md`.
-3. **`memory/context/company.md`** — Add the project to the active projects list.
-4. **CURRENT-SPRINT.md** — If the project is P0 or P1 priority, add it to the sprint.
+- Add a row to `executive-summary/EXECUTIVE_SUMMARY.md` Portfolio Status table
+- Add a line to `memory/INDEX.md` under Projects
+- Update `memory/context/company.md` Active Projects table
+- Update `CURRENT-SPRINT.md` if the project has P0/P1 items
 
 ## Step 4: Confirm
-
-Tell the user: **"Project {Name} is set up."** List the files created.
+Tell the user: "Project {Name} is set up. Context loader, lessons file, and memory are ready."

@@ -1,6 +1,8 @@
 # Lessons — Shared
 > Cross-cutting standing orders that apply to ALL session profiles.
 > Loaded first, before any profile-specific lessons file.
+>
+> **Numbering convention:** rule numbers are stable identifiers assigned in the order rules were added. Sections group rules topically, so numbers may appear non-sequentially within the file (Rule 11 sits in Coding Standards between Rules 4 and 5; Rule 12 sits in Governance between Rules 9 and 10). External references (e.g., "Rule 7" in `tools/check-session-close.sh`, `.claude/skills/close/SKILL.md`, `docs/SECURITY-MODEL.md`) depend on numbers staying stable — never renumber existing rules.
 
 ## Security Baseline
 

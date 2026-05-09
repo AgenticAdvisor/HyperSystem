@@ -35,6 +35,8 @@ Standing orders live in `tasks/lessons/` and load per-session, not per-turn.
 
 Rules added here cost zero tokens in sessions that don't load them.
 
+**Why lessons live here, not inside `Projects/{Name}/`:** per-project lessons are deliberately centralized in `tasks/lessons/{slug}.md` rather than `Projects/{Name}/lessons.md`. This keeps the full lesson surface scannable from one directory (useful for cross-project pattern matching), and the corresponding context-loading skill in `.claude/skills/{slug}-context/` reads the lessons file at session start regardless of where it lives. If you prefer co-locating lessons under their project, update the slug-context skill body and the bootstrap template — nothing else hard-codes the path.
+
 ---
 
 ## Adding Hooks

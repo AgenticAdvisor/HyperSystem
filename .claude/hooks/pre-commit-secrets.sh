@@ -2,8 +2,22 @@
 # Pre-commit hook — scan staged files for secrets before they hit git history
 # Blocks commits that contain API keys, tokens, passwords, or private keys.
 # Exit 1 = block commit, Exit 0 = allow.
+#
+# Invoked from PreToolUse(Bash). Reads the JSON payload on stdin and only
+# proceeds when the command being run is a `git commit`. For any other Bash
+# invocation, exits silently with 0. When stdin is empty (manual/test
+# invocation), proceeds with the scan against currently-staged files.
 
 set -euo pipefail
+
+# Filter: only run on `git commit` invocations when called via PreToolUse
+PAYLOAD=$(cat 2>/dev/null || true)
+if [[ -n "$PAYLOAD" ]]; then
+  COMMAND=$(echo "$PAYLOAD" | grep -o '"command": *"[^"]*"' | head -1 | sed 's/"command": *"//;s/"$//' 2>/dev/null || true)
+  if [[ -n "$COMMAND" ]] && ! echo "$COMMAND" | grep -qE '(^|[[:space:]&;|()])git[[:space:]]+commit([[:space:]]|$)'; then
+    exit 0
+  fi
+fi
 
 WORKSPACE="$(cd "$(dirname "$0")/../.." && pwd)"
 VIOLATIONS=()

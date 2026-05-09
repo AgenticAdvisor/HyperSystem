@@ -5,15 +5,12 @@
 
 set -euo pipefail
 
-TOOL_INPUT="${TOOL_INPUT:-}"
+# Claude Code passes hook payload as JSON on stdin
+PAYLOAD=$(cat)
+[[ -z "$PAYLOAD" ]] && exit 0
 
-# Only check Bash tool calls
-if [[ -z "$TOOL_INPUT" ]]; then
-  exit 0
-fi
-
-# Extract command from tool input
-COMMAND=$(echo "$TOOL_INPUT" | grep -o '"command": *"[^"]*"' | sed 's/"command": *"//;s/"$//' 2>/dev/null || true)
+# Extract command from .tool_input.command
+COMMAND=$(echo "$PAYLOAD" | grep -o '"command": *"[^"]*"' | head -1 | sed 's/"command": *"//;s/"$//' 2>/dev/null || true)
 [[ -z "$COMMAND" ]] && exit 0
 
 WARNINGS=()

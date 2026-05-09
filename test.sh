@@ -45,6 +45,7 @@ fi
 echo ""
 echo "3. Hooks (existence + executable)"
 EXPECTED_HOOKS=(
+  "pre-bash-cwd-check.sh"
   "pre-commit-secrets.sh"
   "pre-compact-close.sh"
   "pre-tool-bash-guard.sh"
@@ -72,6 +73,7 @@ EXPECTED_SKILLS=(
   "health-check"
   "new-project"
   "reload"
+  "worktree"
 )
 for skill in "${EXPECTED_SKILLS[@]}"; do
   SKILL_PATH="$REPO_ROOT/.claude/skills/$skill/SKILL.md"
@@ -107,6 +109,7 @@ echo ""
 echo "6. Security tools (existence)"
 EXPECTED_TOOLS=(
   "tools/_sanitize_bridge.py"
+  "tools/check-handoff-budget.py"
   "tools/check-session-close.sh"
   "tools/content_security.py"
   "tools/sanitize.js"
@@ -143,7 +146,7 @@ echo ""
 echo "8. Hook wiring (settings.json)"
 SETTINGS="$REPO_ROOT/.claude/settings.json"
 if [[ -f "$SETTINGS" ]]; then
-  for hook in session-start stop-guard pre-compact-close track-modified pre-tool-bash-guard pre-commit-secrets; do
+  for hook in session-start stop-guard pre-compact-close track-modified pre-tool-bash-guard pre-commit-secrets pre-bash-cwd-check; do
     if grep -q "$hook" "$SETTINGS"; then
       pass "$hook wired in settings.json"
     else

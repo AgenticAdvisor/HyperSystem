@@ -113,6 +113,7 @@ CLAUDE.md                    ← HOW sessions route (wins routing conflicts)
 | `/new-project` | Manual | Add a project with full governance scaffolding |
 | `/archive-project` | Manual | Sunset a project cleanly |
 | `/health-check` | Manual | Governance consistency audit |
+| `/worktree` | Manual | Create isolated git worktree for sprint work |
 
 ---
 

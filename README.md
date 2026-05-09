@@ -53,7 +53,7 @@ The key insight: **Layer 0 is deterministic.** Shell hooks run before Claude pro
 |---|---|
 | 4 lifecycle hooks | HANDOFF.json |
 | Security gateway (1,200+ lines) | CURRENT-SPRINT.md |
-| 5 operational skills | EXECUTIVE_SUMMARY.md |
+| 6 operational skills | EXECUTIVE_SUMMARY.md |
 | Standing orders + coding workflow | work-changelog.md |
 | Templates for all generated files | memory/ (index, glossary, context) |
 | Architecture + folder structure docs | Projects/ (per-project files) |
@@ -73,6 +73,16 @@ The key insight: **Layer 0 is deterministic.** Shell hooks run before Claude pro
 - Claude Code (CLI or IDE extension)
 - git
 - Python 3 (for security tools)
+
+## Known Limitations
+
+**No automated upgrade path.** When a new version of the template ships, existing workspaces cannot `git pull` cleanly — `CLAUDE.md` is personalized at bootstrap, the security log is workspace-local, and several governance files diverge from the template the moment the first session runs. Upgrade is currently a manual port: read the upstream changelog, apply hook / skill / security-gateway changes by hand, leave personalized governance files alone. A version-aware `tools/upgrade.sh` that respects the bootstrap personalization layer is on the roadmap.
+
+**Single-agent only.** The trust model assumes one Claude Code instance per workspace. Multi-agent workflows require additional message integrity controls — see `docs/SECURITY-MODEL.md` Known Limitations §5.
+
+**Claude Code-specific.** Hooks, skills, and deferred tool primitives (`AskUserQuestion`, `TaskCreate`, etc.) are Claude Code features. Codex, Gemini CLI, or Copilot CLI ports would need to re-implement Layer 0 — the security gateway and governance docs port cleanly; the deterministic enforcement layer does not.
+
+**No semantic prompt-injection defense.** Pattern-based detection catches known vectors but not meaning-equivalent novel injections. See `docs/SECURITY-MODEL.md` Known Limitations §1.
 
 ## License
 

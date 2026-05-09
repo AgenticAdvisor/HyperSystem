@@ -6,6 +6,7 @@ workspace/
 │   ├── settings.json              ★ Hook wiring, permissions
 │   ├── settings.local.json        Local overrides (gitignored)
 │   ├── hooks/
+│   │   ├── pre-bash-cwd-check.sh  ★ PreToolUse(Bash): nested-repo cwd-leak guard for git ops
 │   │   ├── pre-commit-secrets.sh  ★ PreToolUse(git commit): secrets detection (30+ patterns)
 │   │   ├── pre-compact-close.sh   ★ PreCompact: close-before-compact enforcement
 │   │   ├── pre-tool-bash-guard.sh ★ PreToolUse(Bash): tool misuse detection (OWASP LLM06/ASI02)
@@ -13,11 +14,12 @@ workspace/
 │   │   ├── stop-guard.sh          ★ Stop: session close enforcement
 │   │   └── track-modified.sh      ★ PostToolUse(Write|Edit): file modification tracking
 │   └── skills/
-│       ├── close/SKILL.md         /close — session close checklist
+│       ├── close/SKILL.md         /close — session close checklist (incl. branch-check + budget gate)
 │       ├── reload/SKILL.md        /reload — refresh governance mid-session
 │       ├── new-project/SKILL.md   /new-project — add a project
 │       ├── archive-project/SKILL.md /archive-project — sunset a project
 │       ├── health-check/SKILL.md  /health-check — governance audit
+│       ├── worktree/SKILL.md      /worktree — create isolated git worktree for sprint work
 │       └── {slug}-context/SKILL.md  Per-project context loaders (created during bootstrap)
 │
 ├── CLAUDE.md                      ★ Root instructions
@@ -42,7 +44,8 @@ workspace/
 │   ├── secure_writer.py           Python gateway — sanitize + write
 │   ├── sanitize.js                Node.js gateway
 │   ├── _sanitize_bridge.py        Node↔Python bridge
-│   └── check-session-close.sh     Post-session governance validator
+│   ├── check-session-close.sh     Post-session governance validator
+│   └── check-handoff-budget.py    HANDOFF.json summary budget enforcer (≤6 items, called from /close Step 3.5)
 │
 ├── memory/
 │   ├── INDEX.md                   One-line manifest of all memory files

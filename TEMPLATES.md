@@ -57,6 +57,8 @@
 # Lessons — Shared
 > Cross-cutting standing orders that apply to ALL session profiles.
 > Loaded first, before any profile-specific lessons file.
+>
+> **Numbering convention:** rule numbers are stable identifiers assigned in the order rules were added. Sections group rules topically, so numbers may appear non-sequentially within the file. External references depend on numbers staying stable — never renumber existing rules.
 
 ## Security Baseline
 
@@ -78,6 +80,12 @@
 ### Rule 4: Lessons Are Written Immediately
 - **TRIGGER:** Any correction from the user during a session
 - **RULE:** Write the lesson to `tasks/lessons/{profile}.md` the moment the correction happens. Don't defer to end of session.
+
+## Coding Standards
+
+### Rule 11: TDD Is Default for All Code
+- **TRIGGER:** Any session that writes or modifies code
+- **RULE:** Write failing tests before implementation. Red-green-refactor, no exceptions. Trivial one-line fixes may skip if no test infrastructure exists yet.
 
 ## File Safety
 
@@ -102,6 +110,10 @@
 ### Rule 9: Governance Edits Trigger Consistency Check
 - **TRIGGER:** Any edit to CLAUDE.md, _shared.md, ARCHITECTURE.md, FOLDER-STRUCTURE.md
 - **RULE:** Run the Governance Consistency Checklist before returning to the user's task.
+
+### Rule 12: Lesson Enforcement Is Three-Layer
+- **TRIGGER:** Any session that modifies project code
+- **RULE:** Three enforcement layers ensure lessons are captured: (1) session-start hook audits previous session, (2) `/close` Step 2 requires explicit declaration, (3) context-loading skills load lessons as working documents.
 
 ### Rule 10: Memory Systems Don't Overlap
 - **TRIGGER:** Writing information to a memory file

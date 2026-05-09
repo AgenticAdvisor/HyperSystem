@@ -55,7 +55,7 @@ Escalate to blocking only if chronic drift is observed in a specific workspace.
 CLAUDE.md loads every turn and costs tokens every turn. Target: under 1,200 tokens.
 
 Everything that fires less than every turn lives elsewhere:
-- **Skills** (loaded per-invocation): `/close`, `/new-project`, `/health-check`, `/reload`, `/archive-project`.
+- **Skills** (loaded per-invocation): `/close`, `/new-project`, `/health-check`, `/reload`, `/archive-project`, `/worktree`.
 - **Lessons** (loaded per-session): standing orders, coding workflow, domain-specific rules.
 - **Memory** (loaded on demand): project knowledge, glossary, organizational context.
 

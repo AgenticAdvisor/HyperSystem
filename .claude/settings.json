@@ -6,7 +6,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/session-start.sh"
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/session-start.sh"
           }
         ]
       }
@@ -17,7 +17,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/track-modified.sh \"$TOOL_INPUT\""
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/track-modified.sh"
           }
         ]
       }
@@ -28,7 +28,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/stop-guard.sh"
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/stop-guard.sh"
           }
         ]
       }
@@ -39,11 +39,15 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/pre-tool-bash-guard.sh"
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pre-tool-bash-guard.sh"
           },
           {
             "type": "command",
-            "command": "if echo \"$TOOL_INPUT\" | grep -q 'git commit'; then bash .claude/hooks/pre-commit-secrets.sh; fi"
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pre-commit-secrets.sh"
+          },
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pre-bash-cwd-check.sh"
           }
         ]
       }
@@ -54,7 +58,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "bash .claude/hooks/pre-compact-close.sh"
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/.claude/hooks/pre-compact-close.sh"
           }
         ]
       }

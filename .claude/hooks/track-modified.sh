@@ -4,13 +4,13 @@
 
 set -euo pipefail
 
-TOOL_INPUT="${1:-}"
+# Claude Code passes hook payload as JSON on stdin
+PAYLOAD=$(cat)
 SESSION_ID="${SESSION_ID:-default}"
 TRACKING_FILE="/tmp/.claude-modified-files-${SESSION_ID}"
 
-# Extract file_path from tool input (JSON)
-if [[ -n "$TOOL_INPUT" ]]; then
-  FILE_PATH=$(echo "$TOOL_INPUT" | grep -o '"file_path": *"[^"]*"' | sed 's/"file_path": *"//;s/"$//' || true)
+if [[ -n "$PAYLOAD" ]]; then
+  FILE_PATH=$(echo "$PAYLOAD" | grep -o '"file_path": *"[^"]*"' | head -1 | sed 's/"file_path": *"//;s/"$//' || true)
   if [[ -n "$FILE_PATH" ]]; then
     echo "$FILE_PATH" >> "$TRACKING_FILE"
   fi

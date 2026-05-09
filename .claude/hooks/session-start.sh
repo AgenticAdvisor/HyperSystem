@@ -79,7 +79,6 @@ fi
 
 # Outcome verification (OWASP ASI09): verify previous session's claims against reality
 if [[ -f "$WORKSPACE/HANDOFF.json" ]]; then
-  # Check if files_created in handoff actually exist
   MISSING_FILES=$(python3 -c "
 import json, os
 try:
