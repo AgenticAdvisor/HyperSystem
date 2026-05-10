@@ -127,14 +127,46 @@ def _log_event(
 
 
 def _rotate_log_if_needed() -> None:
-    """Keep the security log under MAX_LOG_ENTRIES lines."""
+    """Keep the security log under MAX_LOG_ENTRIES lines.
+
+    When rotation drops the oldest half, write an explicit rotation_marker
+    entry as the new first line. The marker documents what was discarded
+    (count + SHA of the dropped tail entry). Subsequent entries chain
+    forward from the marker. Any prev_hash mismatch immediately following
+    a rotation_marker is an expected discontinuity, not tampering.
+
+    The marker reuses prev_hash="genesis" (same sentinel as the very first
+    log entry). Chain validators distinguish creation from rotation by
+    checking the type field — only rotation_marker entries have it.
+    """
     try:
         with open(SECURITY_LOG, "r", encoding="utf-8") as f:
             lines = f.readlines()
-        if len(lines) > MAX_LOG_ENTRIES:
-            # Keep the most recent half
-            with open(SECURITY_LOG, "w", encoding="utf-8") as f:
-                f.writelines(lines[len(lines) // 2 :])
+        if len(lines) <= MAX_LOG_ENTRIES:
+            return
+
+        keep_from = len(lines) // 2
+        dropped_lines = lines[:keep_from]
+        kept_lines = lines[keep_from:]
+
+        dropped_tail_sha = (
+            hashlib.sha256(dropped_lines[-1].strip().encode("utf-8")).hexdigest()[:16]
+            if dropped_lines else "none"
+        )
+
+        marker = {
+            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "prev_hash": "genesis",
+            "type": "rotation_marker",
+            "dropped_count": len(dropped_lines),
+            "dropped_tail_sha": dropped_tail_sha,
+            "note": "log rotated; previous entries discarded",
+        }
+        marker_line = json.dumps(marker, ensure_ascii=False) + "\n"
+
+        with open(SECURITY_LOG, "w", encoding="utf-8") as f:
+            f.write(marker_line)
+            f.writelines(kept_lines)
     except OSError:
         pass
 

@@ -19,7 +19,9 @@ if [[ -n "$PAYLOAD" ]]; then
   fi
 fi
 
-WORKSPACE="$(cd "$(dirname "$0")/../.." && pwd)"
+# WORKSPACE_OVERRIDE allows the test suite to point at a synthetic repo.
+# Default: derive from script location (parent of .claude/hooks/).
+WORKSPACE="${WORKSPACE_OVERRIDE:-$(cd "$(dirname "$0")/../.." && pwd)}"
 VIOLATIONS=()
 
 # Only run if git is available and we're in a repo
@@ -36,6 +38,8 @@ fi
 
 # --- Pattern definitions ---
 # Each pattern: regex|description
+# Quoting: use '...' for plain patterns; use $'...' when the pattern needs
+# apostrophe in a character class or \x hex escapes (interpreted before grep).
 PATTERNS=(
   # API keys
   'sk-ant-[a-zA-Z0-9_-]{20,}|Anthropic API key'
@@ -50,19 +54,22 @@ PATTERNS=(
   # Private keys
   '-----BEGIN (RSA |EC |DSA |OPENSSH )?PRIVATE KEY-----|Private key'
   '-----BEGIN PGP PRIVATE KEY BLOCK-----|PGP private key'
-  # Generic secrets
-  'PRIVATE_KEY\s*=\s*["\x27][^\s]{10,}|Private key assignment'
-  'SECRET_KEY\s*=\s*["\x27][^\s]{10,}|Secret key assignment'
-  'PASSWORD\s*=\s*["\x27][^\s]{6,}|Password assignment'
-  'DB_PASSWORD\s*=\s*["\x27][^\s]{6,}|Database password'
-  'API_KEY\s*=\s*["\x27][^\s]{10,}|API key assignment'
-  'AUTH_TOKEN\s*=\s*["\x27][^\s]{10,}|Auth token assignment'
-  'ACCESS_TOKEN\s*=\s*["\x27][^\s]{10,}|Access token assignment'
+  # Generic secrets (apostrophe character class via $'...' ANSI-C quoting)
+  # \x27 = literal apostrophe; [^[:space:]] used inside char class (BSD grep
+  # treats [^\s] as "not backslash-or-s", so any credential containing 's'
+  # anywhere evades the pattern — silent false negative on macOS).
+  $'PRIVATE_KEY\\s*=\\s*["\x27][^[:space:]]{10,}|Private key assignment'
+  $'SECRET_KEY\\s*=\\s*["\x27][^[:space:]]{10,}|Secret key assignment'
+  $'PASSWORD\\s*=\\s*["\x27][^[:space:]]{6,}|Password assignment'
+  $'DB_PASSWORD\\s*=\\s*["\x27][^[:space:]]{6,}|Database password'
+  $'API_KEY\\s*=\\s*["\x27][^[:space:]]{10,}|API key assignment'
+  $'AUTH_TOKEN\\s*=\\s*["\x27][^[:space:]]{10,}|Auth token assignment'
+  $'ACCESS_TOKEN\\s*=\\s*["\x27][^[:space:]]{10,}|Access token assignment'
   # Connection strings
-  'mongodb(\+srv)?://[^\s]+@|MongoDB connection string'
-  'postgres(ql)?://[^\s]+@|PostgreSQL connection string'
-  'mysql://[^\s]+@|MySQL connection string'
-  'redis://:[^\s]+@|Redis connection string'
+  'mongodb(\+srv)?://[^[:space:]]+@|MongoDB connection string'
+  'postgres(ql)?://[^[:space:]]+@|PostgreSQL connection string'
+  'mysql://[^[:space:]]+@|MySQL connection string'
+  'redis://:[^[:space:]]+@|Redis connection string'
   # Slack/Discord
   'xoxb-[0-9]{10,}-[a-zA-Z0-9]{20,}|Slack bot token'
   'xoxp-[0-9]{10,}-[a-zA-Z0-9]{20,}|Slack user token'

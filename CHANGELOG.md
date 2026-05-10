@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.2.1] — 2026-05-10
+
+### Fixed
+- **Secret detection now catches single-quoted assignments.** The `pre-commit-secrets.sh` pattern character class did not include the apostrophe character, so assignments like `PASSWORD = 'foo'` slipped through. Affected 7 secret patterns (PRIVATE_KEY, SECRET_KEY, PASSWORD, DB_PASSWORD, API_KEY, AUTH_TOKEN, ACCESS_TOKEN). Also fixed BSD-grep portability for the 4 connection-string patterns (mongodb, postgres, mysql, redis) that used `[^\s]` inside character classes — now uses `[^[:space:]]` (POSIX portable).
+- **Hook JSON parsing is now schema-correct.** Hooks previously used `grep`/`sed` to pull values out of JSON payloads on stdin; values containing escaped quotes or newlines could parse incorrectly. New shared helper `tools/_hook_payload.sh` uses Python JSON parsing — single source of truth for all hooks. No new external dependency (Python was already required).
+- **Session-start hook handles workspace paths with special characters.** Three Python invocations previously interpolated the workspace path directly into source code; paths containing apostrophes broke parsing. Paths are now passed via `argv`.
+- **Audit-log rotation preserves chain continuity.** When `tools/.security-log.jsonl` rotated past 5000 entries, the hash chain silently broke at the rotation point. Rotation now writes an explicit `{"type": "rotation_marker", "dropped_count": N, "dropped_tail_sha": "..."}` entry as the new first line, making rotation events grep-able and chain discontinuity explicit rather than silent.
+
+### Tests
+- 4 new regression checks in `test.sh` (one per fix). Total checks: **46** (was 42).
+
+### Compatibility
+- No new dependencies. No breaking changes. Drop-in replacement for v0.2.0.
+
 ## [0.2.0] — 2026-05-09
 
 ### Added
@@ -43,6 +57,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **Test suite** (`test.sh`): 38 checks across content security, gateway, hook wiring, skill existence, governance files, security tools, documentation, and defense-count consistency.
 - MIT License.
 
-[Unreleased]: https://github.com/AgenticAdvisor/HyperSystem/compare/v0.2.0...HEAD
+[Unreleased]: https://github.com/AgenticAdvisor/HyperSystem/compare/v0.2.1...HEAD
+[0.2.1]: https://github.com/AgenticAdvisor/HyperSystem/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/AgenticAdvisor/HyperSystem/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/AgenticAdvisor/HyperSystem/releases/tag/v0.1.0

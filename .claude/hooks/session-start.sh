@@ -4,7 +4,9 @@
 
 set -euo pipefail
 
-WORKSPACE="$(cd "$(dirname "$0")/../.." && pwd)"
+# WORKSPACE_OVERRIDE allows the test suite to point at a synthetic repo.
+# Default: derive from script location (parent of .claude/hooks/).
+WORKSPACE="${WORKSPACE_OVERRIDE:-$(cd "$(dirname "$0")/../.." && pwd)}"
 WARNINGS=()
 
 # Three-date sentinel: changelog, handoff, sprint dates should match
@@ -38,7 +40,7 @@ fi
 
 # File budget: handoff summary under 6 items
 if [[ -f "$WORKSPACE/HANDOFF.json" ]]; then
-  SUMMARY_COUNT=$(python3 -c "import json,sys; d=json.load(open('$WORKSPACE/HANDOFF.json')); print(len(d.get('last_session',{}).get('summary',[])))" 2>/dev/null || echo 0)
+  SUMMARY_COUNT=$(python3 -c 'import json,sys; d=json.load(open(sys.argv[1])); print(len(d.get("last_session",{}).get("summary",[])))' "$WORKSPACE/HANDOFF.json" 2>/dev/null || echo 0)
   if (( SUMMARY_COUNT > 6 )); then
     WARNINGS+=("HANDOFF.json summary has $SUMMARY_COUNT items (budget: 6). Consolidate before next session.")
   fi
@@ -46,22 +48,22 @@ fi
 
 # Lesson coverage audit: check if previous session's project work had lessons captured
 if [[ -f "$WORKSPACE/HANDOFF.json" ]]; then
-  TOUCHED_PROJECTS=$(python3 -c "
-import json, re
+  TOUCHED_PROJECTS=$(python3 -c '
+import json, re, sys
 try:
-    d = json.load(open('$WORKSPACE/HANDOFF.json'))
-    ls = d.get('last_session', {})
-    files = ls.get('files_modified', []) + ls.get('files_created', [])
+    d = json.load(open(sys.argv[1]))
+    ls = d.get("last_session", {})
+    files = ls.get("files_modified", []) + ls.get("files_created", [])
     projects = set()
     for f in files:
-        m = re.match(r'Projects/([^/]+)/', f)
+        m = re.match(r"Projects/([^/]+)/", f)
         if m:
             projects.add(m.group(1))
     for p in sorted(projects):
         print(p)
 except Exception:
     pass
-" 2>/dev/null || true)
+' "$WORKSPACE/HANDOFF.json" 2>/dev/null || true)
 
   if [[ -n "$TOUCHED_PROJECTS" && -n "${HANDOFF_DATE:-}" ]]; then
     while IFS= read -r PROJECT_NAME; do
@@ -79,18 +81,20 @@ fi
 
 # Outcome verification (OWASP ASI09): verify previous session's claims against reality
 if [[ -f "$WORKSPACE/HANDOFF.json" ]]; then
-  MISSING_FILES=$(python3 -c "
-import json, os
+  MISSING_FILES=$(python3 -c '
+import json, os, sys
 try:
-    d = json.load(open('$WORKSPACE/HANDOFF.json'))
-    created = d.get('last_session', {}).get('files_created', [])
+    handoff_path = sys.argv[1]
+    workspace = sys.argv[2]
+    d = json.load(open(handoff_path))
+    created = d.get("last_session", {}).get("files_created", [])
     for f in created:
-        full = os.path.join('$WORKSPACE', f)
+        full = os.path.join(workspace, f)
         if not os.path.exists(full):
             print(f)
 except Exception:
     pass
-" 2>/dev/null || true)
+' "$WORKSPACE/HANDOFF.json" "$WORKSPACE" 2>/dev/null || true)
 
   if [[ -n "$MISSING_FILES" ]]; then
     while IFS= read -r MISSING; do

@@ -17,10 +17,13 @@
 
 set -euo pipefail
 
+# shellcheck disable=SC1090
+source "$(dirname "$0")/../../tools/_hook_payload.sh"
+
 PAYLOAD=$(cat)
 [[ -z "$PAYLOAD" ]] && exit 0
 
-COMMAND=$(echo "$PAYLOAD" | grep -o '"command": *"[^"]*"' | head -1 | sed 's/"command": *"//;s/"$//' 2>/dev/null || true)
+COMMAND=$(echo "$PAYLOAD" | extract_field tool_input.command)
 [[ -z "$COMMAND" ]] && exit 0
 
 # Only check git subcommands that read or mutate repo state.

@@ -5,12 +5,14 @@
 
 set -euo pipefail
 
+# shellcheck disable=SC1090
+source "$(dirname "$0")/../../tools/_hook_payload.sh"
+
 # Claude Code passes hook payload as JSON on stdin
 PAYLOAD=$(cat)
 [[ -z "$PAYLOAD" ]] && exit 0
 
-# Extract command from .tool_input.command
-COMMAND=$(echo "$PAYLOAD" | grep -o '"command": *"[^"]*"' | head -1 | sed 's/"command": *"//;s/"$//' 2>/dev/null || true)
+COMMAND=$(echo "$PAYLOAD" | extract_field tool_input.command)
 [[ -z "$COMMAND" ]] && exit 0
 
 WARNINGS=()
