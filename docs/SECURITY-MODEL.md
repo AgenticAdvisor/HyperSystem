@@ -50,140 +50,101 @@ secure_writer.py (enforcement)
 
 ---
 
-## Defense Inventory (132 Defenses, A-Z)
+## Security Controls (113 controls in 7 categories)
 
-1. .env file commit prevention
-2. .env / .env.* / .env.local / .env.production exclusion (.gitignore)
-3. ACCESS_TOKEN assignment detection
-4. API_KEY assignment detection
-5. Anthropic API key detection (sk-ant-*)
-6. AUTH_TOKEN assignment detection
-7. Authority document spoofing detection (RAG)
-8. Authority impersonation detection (prompt injection)
-9. AWS Access Key ID detection (AKIA*)
-10. Backtick shell execution detection
-11. Base64-encoded attack payload detection (decode + re-scan)
-12. Base64 payload sequence pattern matching
-13. Bidirectional control character detection
-14. Block device write prevention
-15. Boolean blind SQLi detection
-16. Credential harvesting detection (grep PASSWORD/SECRET/TOKEN)
-17. Close-before-compact enforcement warning
-18. Cloud metadata endpoint detection (AWS/GCP/Azure)
-19. Comment-based SQL evasion detection
-20. Constitutional jailbreak detection (DAN mode/bypass safety)
-21. Content size hard reject (100MB)
-22. Context window stuffing detection (repeated characters)
-23. Cross-document reference injection detection (RAG)
-24. Cross-session lesson coverage audit
-25. Cross-session outcome verification (HANDOFF claims vs disk)
-26. CSS @import with JavaScript/HTTP detection
-27. CSS display:none / visibility:hidden stripping
-28. CSS expression/behavior detection
-29. Data exfiltration chain detection (cat file | curl)
-30. Data exfiltration detection (curl/wget/nc with outbound data)
-31. Data exfiltration instruction detection (prompt injection)
-32. Data URI with HTML detection
-33. DB_PASSWORD assignment detection
-34. DDE injection detection (IMPORTXML/CMD)
-35. Destructive git operation detection (force push/hard reset/clean)
-36. Disk/filesystem operation detection (mkfs/dd/shred)
-37. DROP/ALTER/TRUNCATE/DELETE/INSERT/UPDATE command detection
-38. Environment variable dump piping detection
-39. File modification tracking (audit trail)
-40. File protocol detection (file://)
-41. File transfer tool detection (scp/rsync/ftp)
-42. Form action hijacking detection
-43. Formula injection detection (leading =, +, @)
-44. GitHub fine-grained PAT detection (github_pat_*)
-45. GitHub OAuth token detection (gho_*)
-46. GitHub personal access token detection (ghp_*)
-47. GitHub server token detection (ghs_*)
-48. Google API key detection (AIza*)
-49. Gradual escalation marker detection (RAG)
-50. HANDOFF summary budget enforcement (under 6 items)
-51. Hex-encoded SQL detection
-52. Hidden instruction marker detection
-53. Homoglyph attack detection (>30% non-ASCII threshold)
-54. HTML comment instruction detection (Phase 2)
-55. HTML comment instruction pattern matching (Phase 4)
-56. HTML entity escaping for rendering contexts
-57. HTML entity obfuscation chain detection
-58. Iframe injection detection
-59. Immediate lesson capture standing order (Rule 4)
-60. Incremental escalation detection (prompt injection)
-61. Instruction override detection (prompt injection)
-62. Internal IP address detection (127.0.0.1, 10.x, 172.x, 192.168.x)
-63. JavaScript URI detection
-64. JSON nesting bomb detection
-65. JSON script field detection (onclick/src/href with javascript:)
-66. JSON system/role/__proto__ field injection detection
-67. Local settings exclusion (.claude/settings.local.json)
-68. Log rotation (5,000 entry limit, keeps recent half)
-69. Mandatory lesson declaration at /close (Option A or B)
-70. MongoDB connection string detection
-71. Multi-turn trust building detection (prompt injection)
-72. MySQL connection string detection
-73. NFC Unicode normalization
-74. No-silent-fallback standing order (Rule 2)
-75. Node.js dangerous pattern detection (child_process/process.exit)
-76. Object/embed/applet tag detection
-77. OpenAI API key detection (sk-*)
-78. OWASP ASI03 project-scoped access advisory
-79. Parent directory auto-creation
-80. PASSWORD assignment detection
-81. PGP private key detection
-82. PostgreSQL connection string detection
-83. Privilege escalation detection (Bash — sudo/doas/su/pkexec)
-84. Privilege escalation instruction detection (prompt injection)
-85. PRIVATE_KEY assignment detection
-86. Python dangerous function detection (exec/eval/compile/__import__)
-87. Python deserialization detection (pickle/marshal/yaml.unsafe_load)
-88. Python os/subprocess call detection
-89. Python socket reverse shell detection
-90. Recursive/forced file deletion detection (rm -rf)
-91. Redis connection string detection
-92. Remote code execution detection (pipe download to shell)
-93. Residual HTML tag stripping
-94. Reverse shell detection (bash -i > /dev/tcp)
-95. Reverse shell via netcat detection
-96. Role manipulation detection (prompt injection)
-97. Rolling SHA-256 hash chain (tamper-evident audit log)
-98. Root ownership change detection
-99. RSA/EC/DSA/OpenSSH private key detection
-100. Sanitize-all-external-content standing order (Rule 1)
-101. Script tag detection (XSS)
-102. SECRET_KEY assignment detection
-103. Security log exclusion from git tracking
-104. Sensitive file access detection (.env/passwd/.ssh/credentials/.aws)
-105. Session close enforcement warning (Stop hook)
-106. Session close mandatory standing order (Rule 3)
-107. Shell command injection detection
-108. Shell pipe execution detection
-109. Slack bot token detection (xoxb-*)
-110. Slack user token detection (xoxp-*)
-111. SPRINT file budget enforcement (under 120 lines)
-112. Stacked SQL query detection (;DROP/;EXEC/xp_cmdshell)
-113. Stripe live restricted key detection (rk_live_*)
-114. Stripe live secret key detection (sk_live_*)
-115. SVG with script event detection
-116. System path blocking (/etc, /usr, /bin, /sbin, /proc, /sys, /dev)
-117. System prompt override detection (prompt injection)
-118. Three-date sentinel (HANDOFF vs SPRINT vs changelog)
-119. Three-layer lesson enforcement standing order (Rule 12)
-120. Time-delay blind SQLi detection (WAITFOR/SLEEP/BENCHMARK)
-121. Time-delayed activation trigger detection (RAG)
-122. Token exhaustion truncation (50K char limit)
-123. Token stuffing / embedding space poisoning detection (RAG)
-124. UNION SELECT injection detection
-125. Unicode escape sequence detection
-126. URL encoding chain detection
-127. White-on-white / invisible CSS text detection
-128. World-writable/setuid permission change detection
-129. Workspace boundary enforcement (writes must resolve inside workspace)
-130. XSS event handler detection (onerror/onload/onclick)
-131. Zero-width character sequence pattern matching
-132. Zero-width character stripping
+> **Counting convention.** A "control" is one distinct enforcement point — a regex pattern, a path check, a budget guard, etc. Patterns that share an enforcement code path but match different tokens (e.g., the seven generic credential-assignment patterns in `D.6`) are counted by the number of distinct tokens they catch. Defense-in-depth means a single attack input may trip multiple controls; the count below is of controls, not events.
+>
+> Governance enforcement (session close, lesson capture, three-date sentinel) is documented separately at the end. It runs in the same hook layer but is not a security control.
+
+### A. Content sanitization patterns (54)
+
+`tools/content_security.py` — pattern-based detection over a 6-phase pipeline. All controls in this category are pattern-match-and-strip; bypasses for sufficiently novel inputs are an acknowledged limit (see Known Limitations §1).
+
+- **A.1 SQL injection (7).** DROP/ALTER/TRUNCATE/DELETE/INSERT/UPDATE; UNION SELECT; time-delay blind (WAITFOR/SLEEP/BENCHMARK/pg_sleep); boolean blind; stacked queries (`;DROP`/`;EXEC`/`xp_cmdshell`); comment-based evasion; hex-encoded SQL.
+- **A.2 Code execution (7).** Python `exec`/`eval`/`compile`/`__import__`/`getattr`/`setattr`/`delattr`; `os.system`/`os.popen`/`subprocess.*`; deserialization (`pickle.loads`/`marshal.loads`/`yaml.unsafe_load`); shell command injection; shell pipe to interpreter; backtick execution; Node `child_process`/`process.exit`/`process.env`.
+- **A.3 XSS / browser injection (10).** Script tag; event handler; `javascript:` URI; `data:text/html`; SVG with event; CSS `expression`/`behavior`; CSS `@import`; iframe; object/embed/applet; form action hijack.
+- **A.4 Prompt injection (10).** System override; instruction override; role manipulation; authority impersonation; constitutional jailbreak (DAN/bypass safety); data-exfiltration instruction; privilege-escalation instruction; hidden instruction marker; multi-turn trust building; incremental escalation.
+- **A.5 Hidden content (3).** HTML comments containing instruction keywords; invisible CSS (`display:none`/`visibility:hidden`/`opacity:0`/`font-size:0`/`color:white`); base64-encoded payload (decoded + rescanned against the other categories).
+- **A.6 JSON / structured-data injection (2).** `system`/`role`/`__proto__`/`constructor`/`prototype` field injection; JSON script-field with `javascript:`/`data:`.
+- **A.7 Encoding evasion (3).** HTML entity obfuscation chains; Unicode escape sequences; URL-encoding chains.
+- **A.8 SSRF (3).** Internal IP ranges (`127.0.0.1`/`10.x`/`172.16-31.x`/`192.168.x`/`localhost`/`0.0.0.0`); cloud metadata endpoints (`169.254.169.254`/`metadata.google.internal`/`metadata.azure.com`); `file://` protocol.
+- **A.9 CSV / spreadsheet injection (2).** Formula injection (leading `=`/`+`/`@`); DDE injection (`IMPORTXML`/`IMPORTFEED`/`HYPERLINK`/`CMD`).
+- **A.10 RAG poisoning (5).** Authority-document spoofing; cross-document reference injection; time-delayed activation triggers; gradual-escalation markers (phase-N/step-N); embedding-space poisoning (token stuffing).
+- **A.11 Output rendering safety (2).** Residual HTML tag stripping after pattern phase; HTML entity escaping for rendering contexts (diary/HTML).
+
+### B. Resource-exhaustion limits (4)
+
+`tools/content_security.py` — fail-closed reject or truncate before further scanning.
+
+- **B.1** Input size hard reject (100 MB).
+- **B.2** Token-exhaustion truncation (50,000-char limit).
+- **B.3** Repeated-character stuffing (collapse runs > 500 chars).
+- **B.4** JSON nesting bomb (depth > 10).
+
+### C. Unicode / invisible-character normalization (4)
+
+`tools/content_security.py` — applied before pattern matching.
+
+- **C.1** NFC Unicode normalization.
+- **C.2** Homoglyph attack detection (>30% non-ASCII alpha threshold). **Caveat:** triggers NFKD ASCII-fold, which lossily transliterates non-Latin scripts. Not appropriate for multilingual ingestion without configuration.
+- **C.3** Zero-width character stripping (`U+200B`–`U+200F`, `U+2060`–`U+2064`, `U+FEFF`).
+- **C.4** Bidirectional / format control stripping (`U+2028`–`U+2029`, `U+202A`–`U+202E`, `U+2066`–`U+2069`).
+
+### D. Secret-scan patterns (26)
+
+`.claude/hooks/pre-commit-secrets.sh` — runs as a PreToolUse(Bash) gate on `git commit` and blocks the commit on detection.
+
+- **D.1 Cloud provider API keys (4).** Anthropic (`sk-ant-*`); OpenAI (`sk-*`); Google (`AIza*`); AWS Access Key ID (`AKIA*`).
+- **D.2 GitHub tokens (4).** Personal access (`ghp_*`); OAuth (`gho_*`); server (`ghs_*`); fine-grained (`github_pat_*`).
+- **D.3 Slack tokens (2).** Bot (`xoxb-*`); user (`xoxp-*`).
+- **D.4 Stripe keys (2).** Live secret (`sk_live_*`); live restricted (`rk_live_*`).
+- **D.5 Private key blocks (2).** RSA / EC / DSA / OpenSSH PEM headers; PGP private key block.
+- **D.6 Generic credential assignments (7).** `PRIVATE_KEY`, `SECRET_KEY`, `PASSWORD`, `DB_PASSWORD`, `API_KEY`, `AUTH_TOKEN`, `ACCESS_TOKEN` — quoted-value patterns covering both single- and double-quoted assignments.
+- **D.7 Database connection strings (4).** `mongodb(+srv)?://`, `postgres(ql)?://`, `mysql://`, `redis://` with embedded credentials.
+- **D.8 .env file commit prevention (1).** Any staged path matching `.env` or `.env.*` blocks commit.
+
+### E. Bash command guard (17)
+
+`.claude/hooks/pre-tool-bash-guard.sh` — runs as PreToolUse(Bash). Warns on detection (does not block; user approves via Claude Code's permission prompt). Mitigates OWASP LLM06 / ASI02.
+
+- **E.1 Data exfiltration (3).** Outbound transfer (`curl`/`wget`/`nc`/`ncat` with `-d`/`--data`/`-F`/`--form`/`--upload`/`>`); pipe-to-interpreter (`curl ... | bash`/`sh`/`zsh`/`python`); file-transfer tools (`scp`/`rsync`/`ftp`).
+- **E.2 Destructive operations (4).** `rm -rf`/`--recursive`/`--force`; `mkfs`/`dd of=`/`shred`; `git push --force`/`reset --hard`/`clean -fd`; direct block-device writes (`> /dev/sd*`/`/dev/nvme*`/`/dev/disk*`).
+- **E.3 Privilege escalation (3).** `sudo`/`doas`/`su`/`pkexec`; world-writable or setuid `chmod`; `chown root`.
+- **E.4 Sensitive file access (2).** Read of `.env`/`/etc/passwd`/`/etc/shadow`/`id_rsa`/`.ssh/`/`credentials`/`.aws/`; exfiltration chain (`cat`/`base64`/`xxd` piped to `curl`/`wget`/`nc`).
+- **E.5 Reverse shells (3).** `bash -i ... >/dev/tcp`; `nc -e`/`ncat -e` to a shell; `python ... socket ... connect`.
+- **E.6 Credential harvesting (2).** Environment-variable dump piped to another command (`printenv`/`env`/`set` followed by pipe); `grep` searches for `PASSWORD`/`SECRET`/`TOKEN`/`API_KEY`/`PRIVATE`.
+
+### F. Path & workspace boundary (4)
+
+`tools/secure_writer.py` — fail-closed `ValueError` on violation.
+
+- **F.1** Workspace boundary enforcement (resolved destination must be under `WORKSPACE_ROOT`; `../` escapes blocked).
+- **F.2** System-path blocking (`/etc`/`/usr`/`/bin`/`/sbin`/`/var/run`/`/run`/`/proc`/`/sys`/`/dev`).
+- **F.3** Symlink resolution before validation (`Path.resolve()` — symlink targets cannot smuggle paths past the boundary check).
+- **F.4** Parent-directory auto-creation under the workspace root.
+
+### G. Audit & integrity (4)
+
+- **G.1** Append-only security log (`tools/.security-log.jsonl`).
+- **G.2** Rolling SHA-256 hash chain (each entry's `prev_hash` = first 16 hex of the previous entry's SHA-256). **Caveat:** detects modification only when validated against an external anchor; the log file itself is workspace-writable, so an attacker with shell access can rewrite the entire chain consistently.
+- **G.3** Log rotation with explicit `rotation_marker` entry (no silent chain discontinuity at the rotation boundary).
+- **G.4** File-modification tracking (`.claude/hooks/track-modified.sh`) records writes/edits for cross-session reconciliation.
+
+### H. Governance enforcement (7) — *not security*
+
+These run in the same Layer 0 hook architecture but enforce session discipline, not security boundaries. Listed here for completeness.
+
+- **H.1** Three-date sentinel (HANDOFF / SPRINT / changelog must agree).
+- **H.2** HANDOFF summary budget (≤ 6 items).
+- **H.3** Mandatory lesson declaration at `/close` (Option A or B).
+- **H.4** Session-close enforcement warning (Stop hook).
+- **H.5** Cross-session outcome verification — files self-reported as created in `HANDOFF.json` are checked against the actual disk state.
+- **H.6** PreCompact close warning.
+- **H.7** SPRINT file budget (< 120 lines).
+
+### Standing orders (advisory, not counted as controls)
+
+`tasks/lessons/_shared.md` documents written rules — Rule 1 (sanitize all external content), Rule 2 (no-silent-fallback), Rule 3 (session close mandatory), Rule 4 (immediate lesson capture), Rule 12 (three-layer lesson enforcement), and others. These shape behavior but are not enforcement points; they appear here for completeness, not in the count.
 
 ---
 
@@ -251,14 +212,14 @@ Node.js functions delegate to Python via `_sanitize_bridge.py`. The detection en
 
 ## Standards Alignment
 
-This security model is designed against the following published frameworks:
+This security model is informed by the following published frameworks. "Informed by" means the design draws on these frameworks; it does not claim certified or audited compliance, and several of the framework documents below are themselves drafts.
 
 | Framework | Coverage | Notes |
 |-----------|----------|-------|
 | [OWASP Top 10 for LLM Applications (2025)](https://genai.owasp.org/resource/owasp-top-10-for-llm-applications-2025/) | LLM01 (Prompt Injection), LLM02 (Sensitive Info Disclosure), LLM06 (Excessive Agency), LLM10 (Unbounded Consumption) | Core focus areas. LLM06 mitigated via Bash command guard and project scope. |
-| [OWASP Top 10 for Agentic Applications (2025/2026)](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/) | ASI01 (Goal Hijack), ASI02 (Tool Misuse), ASI03 (Identity/Privilege), ASI06 (Data Poisoning), ASI08 (Cascading Failures), ASI09 (Trust Exploitation) | Six of ten risks addressed. ASI04/05/07/10 noted in Known Limitations. |
-| [NIST AI Risk Management Framework](https://csrc.nist.gov/pubs/ir/8596/iprd) | Cybersecurity Framework Profile for AI (Draft, Dec 2025) | Audit logging with tamper detection, fail-closed design, non-bypassable Layer 0 hooks align with NIST's "non-bypassable controls" concept. |
-| [NIST SP 800-53 COSAiS](https://cloudsecurityalliance.org/blog/2025/09/03/a-look-at-the-new-ai-control-frameworks-from-nist-and-csa) | Control overlays for single-agent AI (in development) | Workspace boundary enforcement and tool-call validation align with anticipated control requirements. |
+| [OWASP Top 10 for Agentic Applications (2025/2026)](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/) | ASI01 (Goal Hijack), ASI02 (Tool Misuse), ASI06 (Data Poisoning), ASI08 (Cascading Failures), ASI09 (Trust Exploitation) — partial. ASI03 (Identity/Privilege) addressed via *advisory* directives only, not deterministic enforcement (see Known Limitations §2). | Five of ten risks addressed deterministically; ASI03 advisory; ASI04/05/07/10 noted in Known Limitations. |
+| [NIST AI Risk Management Framework](https://csrc.nist.gov/pubs/ir/8596/iprd) — *Draft, Dec 2025* | Cybersecurity Framework Profile for AI (Draft) | Audit logging with tamper detection, fail-closed design, and non-bypassable Layer 0 hooks are informed by NIST's "non-bypassable controls" concept. Framework is currently a draft; final form may differ. |
+| [NIST SP 800-53 COSAiS](https://cloudsecurityalliance.org/blog/2025/09/03/a-look-at-the-new-ai-control-frameworks-from-nist-and-csa) — *In development* | Control overlays for single-agent AI | Workspace boundary enforcement and tool-call validation are informed by anticipated control requirements. The control overlay itself is not yet finalized. |
 | [Microsoft Indirect Prompt Injection Research](https://www.microsoft.com/en-us/msrc/blog/2025/07/how-microsoft-defends-against-indirect-prompt-injection-attacks) | Defense-in-depth model | Pattern-based detection as first layer; model-level defenses (e.g., TaskTracker) are outside scaffold scope — see Known Limitations. |
 
 ---

@@ -55,7 +55,7 @@ Node.js path:
 
 ## Attack Surface Coverage
 
-132 defenses across all layers. See `docs/SECURITY-MODEL.md` > "Defense Inventory" for the full alphabetical list.
+113 named control points across content sanitization, secret scanning, Bash command guarding, path/workspace boundaries, and audit integrity. See `docs/SECURITY-MODEL.md` > "Security Controls" for the full categorized inventory.
 
 **Categories covered:**
 - Code execution (Python, Node.js, shell)
@@ -157,7 +157,7 @@ There is no standing bypass. Each instance requires fresh authorization.
 |------|---------|-------|
 | `_sanitize_bridge.py` | Node.js-to-Python bridge | Bridge |
 | `.security-log.jsonl` | Append-only tamper-evident audit trail | Logging |
-| `content_security.py` | Detection engine — 6-phase pipeline, 132 defenses | Detection |
+| `content_security.py` | Detection engine — 6-phase pipeline, ~58 of the 113 control points (categories A, B, C) | Detection |
 | `sanitize.js` | Node.js gateway — delegates to Python | Enforcement |
 | `secure_writer.py` | Python gateway — sanitize, log, write | Enforcement |
 | `SECURITY-GATEWAY.md` | This file — rules, API reference, compliance | Documentation |

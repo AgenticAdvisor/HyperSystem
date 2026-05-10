@@ -6,6 +6,23 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.2.2] — 2026-05-10
+
+### Changed
+- **Security control inventory recategorized.** `docs/SECURITY-MODEL.md` previously listed 132 defenses as a flat alphabetical list; many entries were redundant (e.g., 7 separate items for individual env-var assignment patterns sharing one enforcement code path) and several were governance enforcement points, not security controls. The inventory now reads as 113 named controls organized in 7 categories (content sanitization patterns, resource-exhaustion limits, Unicode normalization, secret-scan patterns, Bash command guard, path & workspace boundary, audit & integrity), with governance enforcement listed separately at the end. Counts and references updated in `tools/content_security.py`, `tools/SECURITY-GATEWAY.md`, `README.md`, and `test.sh`.
+- **Standards-alignment language softened in `docs/SECURITY-MODEL.md`.** Phrasing changed from "designed against" to "informed by" for the framework table heading. The OWASP Agentic row now explicitly notes that ASI03 (Identity/Privilege) is addressed via advisory directives only, not deterministic enforcement (cross-referenced to Known Limitations §2). Draft NIST documents are flagged as drafts in the framework column. Five of ten Agentic risks addressed deterministically; the rest are noted as advisory or limitations.
+- **README expectation-management block added.** A "What This Is / What This Is NOT" section near the top distinguishes The System (a governance scaffold for Claude Code workspaces) from products it is not a substitute for: parameterized queries / ORMs at the application layer, managed secret-scanning services, model-level prompt-injection defenses, supply-chain scanners, network firewalls, runtime sandboxes, and OS-level access controls.
+
+### Tests
+- `test.sh` Section 9 (control-count consistency) now verifies the count appears in `README.md` in addition to `docs/SECURITY-MODEL.md` and `tools/SECURITY-GATEWAY.md`. Total checks: **47** (was 46).
+
+### What the test suite covers
+
+`bash test.sh` runs 47 checks across 10 sections. Three sections carry the **behavioral content**: §1 sweeps `content_security.py` against 35 attack payloads (SQL injection, XSS, prompt injection, SSRF, base64-encoded attacks, etc.) and asserts each is blocked; §2 sweeps `secure_writer.py` against 7 integration scenarios (clean passthrough, script-tag stripping, JSON sanitization, append mode, audit-log writes); §10 runs the 4 v0.2.1 regression tests, each **mutation-verified** — confirmed to fail before its fix landed, ruling out vacuous "passes for the wrong reason" tests. The remaining sections (§3–§9) verify structural wiring: every hook exists and is executable, every skill has a `SKILL.md`, every governance file is present, every hook is wired into `.claude/settings.json`, and the security-control count is consistent across the docs. CI runs the suite on every push and PR via `.github/workflows/test.yml` (SHA-pinned actions, 5-minute timeout, read-only permissions, no credential persistence). Property-based tests and a real hook unit-test framework (`bats`) are tracked for v0.3.0.
+
+### Compatibility
+- Documentation-only release. No code changes, no behavior changes, no breaking changes. Drop-in replacement for v0.2.1.
+
 ## [0.2.1] — 2026-05-10
 
 ### Fixed
@@ -57,7 +74,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - **Test suite** (`test.sh`): 38 checks across content security, gateway, hook wiring, skill existence, governance files, security tools, documentation, and defense-count consistency.
 - MIT License.
 
-[Unreleased]: https://github.com/AgenticAdvisor/HyperSystem/compare/v0.2.1...HEAD
+[Unreleased]: https://github.com/AgenticAdvisor/HyperSystem/compare/v0.2.2...HEAD
+[0.2.2]: https://github.com/AgenticAdvisor/HyperSystem/compare/v0.2.1...v0.2.2
 [0.2.1]: https://github.com/AgenticAdvisor/HyperSystem/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/AgenticAdvisor/HyperSystem/compare/v0.1.0...v0.2.0
 [0.1.0]: https://github.com/AgenticAdvisor/HyperSystem/releases/tag/v0.1.0

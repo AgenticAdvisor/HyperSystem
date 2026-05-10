@@ -12,7 +12,7 @@ research, file ingestion, API responses, and any external data source.
 Enforcement: Call sanitize_content() before writing ANY external data to
 files, rendering in HTML, or passing to downstream tools.
 
-Attack surface coverage (132 defenses — see docs/SECURITY-MODEL.md for full A-Z inventory):
+Attack surface coverage (113 named controls in 7 categories — see docs/SECURITY-MODEL.md for the full inventory):
   - Code execution (Python eval/exec, shell commands, JS XSS)
   - CSV/formula injection (DDE, formula injection)
   - Encoding evasion (base64, unicode, multilanguage, homoglyph)

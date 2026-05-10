@@ -2,6 +2,22 @@
 
 > Session discipline, security enforcement, and knowledge capture for Claude Code — out of the box.
 
+## What This Is / What This Is NOT
+
+**This is** a governance scaffold for Claude Code workspaces. It ships shell hooks that fire before the LLM (Layer 0), a content-sanitization pipeline for external data crossing into the workspace, a secret-scan gate on `git commit`, a Bash command guard, and a session-discipline framework (handoffs, sprints, lessons, audit log). The aim is to make a single-developer Claude Code workspace harder to misuse — by the agent, by injected content, or by ordinary human error — without depending on the LLM to remember to be careful.
+
+**This is NOT** an application security product. The pipeline is regex-based pattern detection. It does not replace:
+
+- Parameterized queries or an ORM at your application layer (it strips obvious SQL shapes from external text, which is not the same thing as preventing SQL injection in your app).
+- A managed secret-scanning service (GitHub secret scanning, Gitleaks in CI). The pre-commit gate is best-effort developer-side.
+- A model-level prompt-injection defense (Microsoft TaskTracker, constitutional classifiers). Pattern detection catches known shapes, not novel meaning-equivalent injections.
+- A supply-chain scanner (Dependabot, Snyk, Socket).
+- Any kind of network firewall, runtime sandbox, or OS-level access control.
+
+It is **a scaffold**, not a service. There is no daemon, no telemetry, no remote enforcement — just files in your repo and hooks in your `.claude/settings.json`. If those files are deleted or modified, the protections leave with them.
+
+---
+
 ## The Problem
 
 Claude Code is powerful. It's also stateless. Every session starts from zero. Your team's hard-won lessons vanish when the context window closes. Security enforcement is "please remember to sanitize." Session handoffs are copy-paste or nothing. And when something goes wrong, there's no audit trail to trace.
@@ -30,7 +46,7 @@ claude
 
 **Lessons that actually persist.** Three-layer enforcement ensures knowledge is captured — not hoped for. The session-start hook audits the previous session's lesson coverage. The close checklist requires an explicit declaration. Context-loading skills treat lesson files as working documents, not afterthoughts.
 
-**Security that enforces itself.** 132 defenses across content sanitization, secrets detection, and tool misuse prevention. A two-layer pipeline (detection engine + enforcement gateway) scans all external content before it reaches the filesystem. Failure mode: STOP. Never silent fallback.
+**Security that enforces itself.** A two-layer pipeline — detection engine + enforcement gateway — scans all external content before it reaches the filesystem. 113 named control points across content sanitization, secret scanning, Bash command guarding, path/workspace boundaries, and audit integrity (full inventory in `docs/SECURITY-MODEL.md`). Failure mode: STOP. Never silent fallback.
 
 **Governance you can audit.** Health checks run at session start. File budgets are enforced. Cross-references are validated. When something drifts, you know immediately — not three sessions later.
 

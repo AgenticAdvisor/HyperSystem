@@ -157,14 +157,14 @@ else
   fail "settings.json MISSING"
 fi
 
-# --- 9. Defense Count Consistency ---
+# --- 9. Control Count Consistency ---
 echo ""
-echo "9. Defense count consistency (132)"
-for f in docs/SECURITY-MODEL.md tools/SECURITY-GATEWAY.md; do
-  if grep -q "132" "$REPO_ROOT/$f"; then
-    pass "$f references 132"
+echo "9. Control count consistency (113)"
+for f in docs/SECURITY-MODEL.md tools/SECURITY-GATEWAY.md README.md; do
+  if grep -q "113" "$REPO_ROOT/$f"; then
+    pass "$f references 113"
   else
-    fail "$f does NOT reference 132"
+    fail "$f does NOT reference 113"
   fi
 done
 
