@@ -196,7 +196,7 @@ PAYLOAD='{"tool_input":{"command":"git commit -m test"}}'
 HOOK_EXIT=0
 HOOK_OUT=$(echo "$PAYLOAD" | WORKSPACE_OVERRIDE="$TEST_REPO" bash "$REPO_ROOT/.claude/hooks/pre-commit-secrets.sh" 2>&1) || HOOK_EXIT=$?
 rm -rf "$TEST_REPO"
-if [[ $HOOK_EXIT -eq 1 && "$HOOK_OUT" == *"Password"* ]]; then
+if [[ $HOOK_EXIT -eq 2 && "$HOOK_OUT" == *"Password"* ]]; then
   pass "pre-commit-secrets blocks single-quoted PASSWORD assignment"
 else
   fail "pre-commit-secrets MISSED single-quoted PASSWORD (exit=$HOOK_EXIT)"

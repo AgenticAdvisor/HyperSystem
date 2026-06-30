@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Pre-commit hook — scan staged files for secrets before they hit git history
 # Blocks commits that contain API keys, tokens, passwords, or private keys.
-# Exit 1 = block commit, Exit 0 = allow.
+# Exit 2 = block commit (PreToolUse convention; exit 1 does NOT block), Exit 0 = allow.
 #
 # Invoked from PreToolUse(Bash). Reads the JSON payload on stdin and only
 # proceeds when the command being run is a `git commit`. For any other Bash
@@ -120,7 +120,7 @@ if [[ ${#VIOLATIONS[@]} -gt 0 ]]; then
   echo "Override: git commit --no-verify (NOT recommended)"
   echo "========================================================"
   echo ""
-  exit 1
+  exit 2
 fi
 
 exit 0
