@@ -6,6 +6,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Fixed
+- **Secrets gate now actually blocks the commit.** `pre-commit-secrets.sh` exited `1` when it detected a secret, but a PreToolUse hook must exit `2` to deny the tool call — exit `1` is a non-blocking error, so the gate reported the secret and let the commit proceed anyway. Now exits `2`; the header comment that claimed exit `1` blocks is corrected.
+
+### Tests
+- `test.sh` check 10.2 now asserts the hook exits `2` (was `1`). The assertion previously certified the non-blocking behavior; it now proves the gate actually blocks. Total checks unchanged: **47**.
+
 ## [0.2.2] — 2026-05-10
 
 ### Changed
